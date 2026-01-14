@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Priorize - Dashboard</title>
   <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -15,7 +14,7 @@
       min-height: 100vh;
     }
 
-    /* ===== NAVBAR ORIGINAL ===== */
+    /* ===== NAVBAR (INTACTO) ===== */
     .navbar {
       position: fixed;
       top: 0;
@@ -93,13 +92,15 @@
       border-radius: 8px 0 0 8px;
     }
 
+    /* === CENTRALIZAÇÃO PELO CENTRO DA TAREFA === */
     .task-container {
       width: 650px;
+      margin-left: -40px; /* offset fino para alinhar o centro da coluna "Tarefa" com o centro da página */
     }
 
     .headers {
       display: grid;
-      grid-template-columns: 60px 1fr 110px;
+      grid-template-columns: 60px 1fr 80px;
       margin-bottom: 10px;
       font-weight: bold;
       color: #444;
@@ -116,9 +117,9 @@
 
     .task {
       display: grid;
-      grid-template-columns: 60px 1fr 110px;
+      grid-template-columns: 60px 1fr 80px;
       align-items: center;
-      gap: 10px;
+      gap: 6px;
       margin-bottom: 12px;
     }
 
@@ -129,10 +130,11 @@
       font-size: 1em;
     }
 
+    /* === AÇÕES MAIS PRÓXIMAS DO CAMPO === */
     .actions {
       display: flex;
-      gap: 12px;
-      justify-content: flex-end;
+      gap: 4px;
+      justify-content: flex-start;
       align-items: center;
     }
 
@@ -168,7 +170,6 @@
 
 <body>
 
-  <!-- NAVBAR ORIGINAL COM USER -->
   <nav class="navbar">
     <div class="logo">Priorize Dashboard</div>
     <div class="user-info">
@@ -196,6 +197,7 @@
     </div>
   </main>
 
+  <!-- SCRIPT PERMANECE EXATAMENTE O MESMO -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
     import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
