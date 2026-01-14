@@ -54,6 +54,33 @@
       justify-content: center;
     }
 
+    .task-wrapper {
+      position: relative;
+      display: flex;
+    }
+
+    .focus-brace {
+      display: flex;
+      align-items: center;
+      margin-right: 10px;
+      color: #764ba2;
+      font-weight: bold;
+    }
+
+    .brace {
+      border-left: 2px dashed #764ba2;
+      border-top: 2px dashed #764ba2;
+      border-bottom: 2px dashed #764ba2;
+      width: 20px;
+      border-radius: 8px 0 0 8px;
+    }
+
+    .focus-text {
+      margin-left: 6px;
+      font-size: 0.9em;
+      white-space: nowrap;
+    }
+
     .task-container {
       width: 600px;
     }
@@ -118,7 +145,10 @@
   </nav>
 
   <main class="main-content">
-    <div class="task-container" id="taskContainer"></div>
+    <div class="task-wrapper">
+      <div id="focusBrace"></div>
+      <div class="task-container" id="taskContainer"></div>
+    </div>
   </main>
 
   <script type="module">
@@ -160,18 +190,35 @@
     async function loadTasks() {
       const ref = doc(db, "tasks", userId);
       const snap = await getDoc(ref);
-      tasks = snap.exists() && snap.data().items.length
-        ? snap.data().items
-        : [""];
+      tasks = snap.exists() && snap.data().items.length ? snap.data().items : [""];
     }
 
     async function saveTasks() {
       await setDoc(doc(db, "tasks", userId), { items: tasks });
     }
 
+    function renderFocusBrace(count) {
+      const brace = document.getElementById('focusBrace');
+      brace.innerHTML = "";
+
+      if (count === 0) return;
+
+      const height = count * 62 - 12;
+
+      brace.innerHTML = `
+        <div class="focus-brace" style="height:${height}px;">
+          <div class="brace" style="height:${height}px;"></div>
+          <div class="focus-text">Foque nisso</div>
+        </div>
+      `;
+    }
+
     function renderTasks() {
       const container = document.getElementById('taskContainer');
       container.innerHTML = "";
+
+      const focusCount = Math.min(3, tasks.length);
+      renderFocusBrace(focusCount);
 
       tasks.forEach((text, index) => {
         const div = document.createElement('div');
