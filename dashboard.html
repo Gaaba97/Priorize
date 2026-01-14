@@ -36,7 +36,7 @@
 
     .focus-brace {
       display: flex;
-      align-items: flex-start;
+      align-items: center; /* CENTRALIZA TEXTO COM A CHAVE */
       margin-right: 6px;
     }
 
@@ -68,6 +68,14 @@
       color: #444;
     }
 
+    .headers .h-priority {
+      text-align: center; /* CENTRALIZA COM OS NÚMEROS */
+    }
+
+    .headers .h-task {
+      text-align: center; /* CENTRALIZA COM O INPUT */
+    }
+
     .task {
       display: grid;
       grid-template-columns: 60px 1fr 90px;
@@ -78,6 +86,7 @@
 
     .task-number {
       font-weight: bold;
+      text-align: center;
     }
 
     .task input {
@@ -135,8 +144,8 @@
 
       <div class="task-container">
         <div class="headers">
-          <div>Prioridade</div>
-          <div>Tarefa</div>
+          <div class="h-priority">Prioridade</div>
+          <div class="h-task">Tarefa</div>
           <div></div>
         </div>
         <div id="taskContainer"></div>
