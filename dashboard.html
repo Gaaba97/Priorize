@@ -14,7 +14,7 @@
       min-height: 100vh;
     }
 
-    /* ===== NAVBAR (INTACTO) ===== */
+    /* NAVBAR — INTACTA */
     .navbar {
       position: fixed;
       top: 0;
@@ -30,22 +30,12 @@
       z-index: 1000;
     }
 
-    .logo {
-      font-size: 1.8em;
-      font-weight: bold;
-    }
+    .logo { font-size: 1.8em; font-weight: bold; }
 
     .user-info {
       display: flex;
       align-items: center;
       gap: 15px;
-    }
-
-    .user-info img {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      border: 3px solid white;
     }
 
     .logout-btn {
@@ -57,7 +47,6 @@
       cursor: pointer;
       font-weight: bold;
     }
-    /* ===== FIM NAVBAR ===== */
 
     .main-content {
       padding-top: 140px;
@@ -68,12 +57,14 @@
     .task-wrapper {
       display: flex;
       align-items: flex-start;
+      position: relative;
     }
 
     .focus-brace {
+      position: absolute;
+      left: -110px; /* MAIS À ESQUERDA */
       display: flex;
-      align-items: flex-start;
-      margin-right: 18px; /* MAIS À ESQUERDA DOS NÚMEROS */
+      align-items: center;
     }
 
     .focus-text {
@@ -87,16 +78,15 @@
     }
 
     .brace {
+      width: 18px;
       border-left: 2px dashed #764ba2;
       border-top: 2px dashed #764ba2;
       border-bottom: 2px dashed #764ba2;
-      width: 18px;
       border-radius: 8px 0 0 8px;
     }
 
     .task-container {
       width: 650px;
-      margin-left: -40px;
     }
 
     .headers {
@@ -134,7 +124,6 @@
     .actions {
       display: flex;
       gap: 4px;
-      justify-content: flex-start;
       align-items: center;
     }
 
@@ -170,180 +159,180 @@
 
 <body>
 
-  <nav class="navbar">
-    <div class="logo">Priorize Dashboard</div>
-    <div class="user-info">
-      <div id="userAvatar"></div>
-      <div>
-        <div id="userName"></div>
-        <div id="userEmail" style="font-size: 0.9em; opacity: 0.9;"></div>
+<nav class="navbar">
+  <div class="logo">Priorize Dashboard</div>
+  <div class="user-info">
+    <div id="userName"></div>
+    <div id="userEmail" style="font-size: 0.9em; opacity: 0.9;"></div>
+    <button class="logout-btn" id="logoutBtn">Sair</button>
+  </div>
+</nav>
+
+<main class="main-content">
+  <div class="task-wrapper">
+    <div id="focusBrace"></div>
+
+    <div class="task-container">
+      <div class="headers">
+        <div>Prioridade</div>
+        <div>Tarefa</div>
+        <div></div>
       </div>
-      <button class="logout-btn" id="logoutBtn">Sair</button>
+      <div id="taskContainer"></div>
     </div>
-  </nav>
+  </div>
+</main>
 
-  <main class="main-content">
-    <div class="task-wrapper">
-      <div id="focusBrace"></div>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+  import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-      <div class="task-container">
-        <div class="headers">
-          <div>Prioridade</div>
-          <div>Tarefa</div>
-          <div></div>
-        </div>
-        <div id="taskContainer"></div>
-      </div>
-    </div>
-  </main>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBll8nZcmuncKUN7xiK2Ku7Xv7gR7z4HwY",
+    authDomain: "priorize-55eb8.firebaseapp.com",
+    projectId: "priorize-55eb8",
+    storageBucket: "priorize-55eb8.firebasestorage.app",
+    messagingSenderId: "876526282464",
+    appId: "1:876526282464:web:e74908e7d0fa48fe041285"
+  };
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBll8nZcmuncKUN7xiK2Ku7Xv7gR7z4HwY",
-      authDomain: "priorize-55eb8.firebaseapp.com",
-      projectId: "priorize-55eb8",
-      storageBucket: "priorize-55eb8.firebasestorage.app",
-      messagingSenderId: "876526282464",
-      appId: "1:876526282464:web:e74908e7d0fa48fe041285"
-    };
+  let tasks = [];
+  let draggedIndex = null;
+  let userId = null;
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    let tasks = [];
-    let draggedIndex = null;
-    let userId = null;
-
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = 'index.html';
-        return;
-      }
-
-      userId = user.uid;
-      document.getElementById('userName').textContent = user.displayName || 'Usuário';
-      document.getElementById('userEmail').textContent = user.email || '';
-
-      if (user.photoURL) {
-        document.getElementById('userAvatar').innerHTML =
-          `<img src="${user.photoURL}" alt="Avatar">`;
-      }
-
-      await loadTasks();
-      renderTasks();
-    });
-
-    async function loadTasks() {
-      const snap = await getDoc(doc(db, "tasks", userId));
-      tasks = snap.exists() && snap.data().items.length ? snap.data().items : [""];
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = 'index.html';
+      return;
     }
 
-    async function saveTasks() {
-      await setDoc(doc(db, "tasks", userId), { items: tasks });
-    }
+    userId = user.uid;
+    document.getElementById('userName').textContent = user.displayName || 'Usuário';
+    document.getElementById('userEmail').textContent = user.email || '';
 
-    function renderFocusBrace(count) {
-      const el = document.getElementById('focusBrace');
-      el.innerHTML = "";
-      if (!count) return;
+    await loadTasks();
+    renderTasks();
+  });
 
-      const taskHeight = 62;
-      const height = count * taskHeight - 12;
+  async function loadTasks() {
+    const snap = await getDoc(doc(db, "tasks", userId));
+    tasks = snap.exists() && snap.data().items.length ? snap.data().items : [""];
+  }
 
-      el.innerHTML = `
-        <div class="focus-brace" style="margin-top:46px">
-          <div class="focus-text" style="height:${height}px">Foque nisso</div>
-          <div class="brace" style="height:${height}px"></div>
+  async function saveTasks() {
+    await setDoc(doc(db, "tasks", userId), { items: tasks });
+  }
+
+  function renderFocusBrace() {
+    const brace = document.getElementById('focusBrace');
+    brace.innerHTML = "";
+
+    const visibleTasks = document.querySelectorAll('.task');
+    const count = Math.min(3, visibleTasks.length);
+    if (!count) return;
+
+    const first = visibleTasks[0].querySelector('input').getBoundingClientRect();
+    const last = visibleTasks[count - 1].querySelector('input').getBoundingClientRect();
+    const wrapperTop = document.querySelector('.task-wrapper').getBoundingClientRect().top;
+
+    const top = first.top - wrapperTop;
+    const height = last.bottom - first.top;
+
+    brace.innerHTML = `
+      <div class="focus-brace" style="top:${top}px; height:${height}px">
+        <div class="focus-text" style="height:${height}px">Foque nisso</div>
+        <div class="brace" style="height:${height}px"></div>
+      </div>
+    `;
+  }
+
+  function renderTasks() {
+    const container = document.getElementById('taskContainer');
+    container.innerHTML = "";
+
+    tasks.forEach((text, index) => {
+      const div = document.createElement('div');
+      div.className = "task";
+
+      div.innerHTML = `
+        <div class="task-number">${index + 1}</div>
+        <input value="${text}">
+        <div class="actions">
+          <div class="drag-handle">✥</div>
+          <div class="check-btn">✔</div>
         </div>
       `;
-    }
 
-    function renderTasks() {
-      const container = document.getElementById('taskContainer');
-      container.innerHTML = "";
+      const input = div.querySelector('input');
+      const handle = div.querySelector('.drag-handle');
+      const check = div.querySelector('.check-btn');
 
-      renderFocusBrace(Math.min(3, tasks.length));
-
-      tasks.forEach((text, index) => {
-        const div = document.createElement('div');
-        div.className = "task";
-
-        div.innerHTML = `
-          <div class="task-number">${index + 1}</div>
-          <input value="${text}">
-          <div class="actions">
-            <div class="drag-handle">✥</div>
-            <div class="check-btn">✔</div>
-          </div>
-        `;
-
-        const input = div.querySelector('input');
-        const handle = div.querySelector('.drag-handle');
-        const check = div.querySelector('.check-btn');
-
-        input.addEventListener('input', e => {
-          const value = e.target.value.trim();
-          if (value === "" && tasks.length > 1) {
-            tasks.splice(index, 1);
-            saveTasks();
-            renderTasks();
-          } else {
-            tasks[index] = e.target.value;
-            saveTasks();
-          }
-        });
-
-        handle.setAttribute("draggable", "true");
-        handle.addEventListener('dragstart', () => draggedIndex = index);
-
-        div.addEventListener('dragover', e => {
-          e.preventDefault();
-          div.classList.add('drag-over');
-        });
-
-        div.addEventListener('dragleave', () => div.classList.remove('drag-over'));
-
-        div.addEventListener('drop', () => {
-          div.classList.remove('drag-over');
-          if (draggedIndex === index) return;
-          const moved = tasks.splice(draggedIndex, 1)[0];
-          tasks.splice(index, 0, moved);
-          saveTasks();
-          renderTasks();
-        });
-
-        check.onclick = () => {
+      input.addEventListener('input', e => {
+        const value = e.target.value.trim();
+        if (value === "" && tasks.length > 1) {
           tasks.splice(index, 1);
-          if (!tasks.length) tasks.push("");
           saveTasks();
           renderTasks();
-        };
-
-        container.appendChild(div);
+        } else {
+          tasks[index] = e.target.value;
+          saveTasks();
+        }
       });
 
-      const btn = document.createElement('button');
-      btn.className = "add-btn";
-      btn.textContent = "+";
-      btn.onclick = () => {
-        if (tasks[tasks.length - 1].trim() === "") return;
-        tasks.push("");
+      handle.setAttribute("draggable", "true");
+      handle.addEventListener('dragstart', () => draggedIndex = index);
+
+      div.addEventListener('dragover', e => {
+        e.preventDefault();
+        div.classList.add('drag-over');
+      });
+
+      div.addEventListener('dragleave', () => div.classList.remove('drag-over'));
+
+      div.addEventListener('drop', () => {
+        div.classList.remove('drag-over');
+        if (draggedIndex === index) return;
+        const moved = tasks.splice(draggedIndex, 1)[0];
+        tasks.splice(index, 0, moved);
+        saveTasks();
+        renderTasks();
+      });
+
+      check.onclick = () => {
+        tasks.splice(index, 1);
+        if (!tasks.length) tasks.push("");
         saveTasks();
         renderTasks();
       };
-      container.appendChild(btn);
-    }
 
-    document.getElementById('logoutBtn').onclick = async () => {
-      await signOut(auth);
-      window.location.href = 'index.html';
+      container.appendChild(div);
+    });
+
+    const btn = document.createElement('button');
+    btn.className = "add-btn";
+    btn.textContent = "+";
+    btn.onclick = () => {
+      if (tasks[tasks.length - 1].trim() === "") return;
+      tasks.push("");
+      saveTasks();
+      renderTasks();
     };
-  </script>
+
+    container.appendChild(btn);
+
+    setTimeout(renderFocusBrace, 0);
+  }
+
+  document.getElementById('logoutBtn').onclick = async () => {
+    await signOut(auth);
+    window.location.href = 'index.html';
+  };
+</script>
 
 </body>
 </html>
