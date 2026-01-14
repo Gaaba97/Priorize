@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Priorize - Dashboard</title>
+  <!-- Favicon adicionado -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .dashboard-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 25px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .user-info img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 3px solid white;
+    }
+    
+    .logout-btn {
+      padding: 10px 20px;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.4);
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    
+    .logout-btn:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    
+    .content {
+      padding: 40px;
+      min-height: 500px;
+    }
+    
+    .welcome-message {
+      font-size: 2.5em;
+      color: #333;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      margin-top: 40px;
+    }
+    
+    .feature-card {
+      background: #f8f9fa;
+      padding: 25px;
+      border-radius: 12px;
+      text-align: center;
+      transition: transform 0.3s;
+      border: 1px solid #e9ecef;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .feature-icon {
+      font-size: 3em;
+      margin-bottom: 15px;
+    }
+    
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+      }
+      
+      .welcome-message {
+        font-size: 1.8em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <div class="header">
+      <h1>Priorize Dashboard</h1>
+      <div class="user-info">
+        <div id="userAvatar"></div>
+        <div>
+          <div id="userName"></div>
+          <div id="userEmail" style="font-size: 0.9em; opacity: 0.9;"></div>
+        </div>
+        <button class="logout-btn" id="logoutBtn">Sair</button>
+      </div>
+    </div>
+    
+    <div class="content">
+      <div class="welcome-message">
+        Bem-vindo ao <span style="color: #764ba2;">Priorize</span>!
+      </div>
+      
+      <p style="text-align: center; color: #666; font-size: 1.2em; max-width: 800px; margin: 0 auto;">
+        Aqui você pode gerenciar suas prioridades, tarefas e projetos de forma eficiente.
+      </p>
+      
+      <div class="features">
+        <div class="feature-card">
+          <div class="feature-icon">📋</div>
+          <h3>Tarefas</h3>
+          <p>Gerencie suas tarefas diárias</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">🎯</div>
+          <h3>Prioridades</h3>
+          <p>Defina suas prioridades</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h3>Relatórios</h3>
+          <p>Acompanhe seu progresso</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">⚙️</div>
+          <h3>Configurações</h3>
+          <p>Personalize sua experiência</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { 
+      getAuth,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBll8nZcmuncKUN7xiK2Ku7Xv7gR7z4HwY",
+      authDomain: "priorize-55eb8.firebaseapp.com",
+      projectId: "priorize-55eb8",
+      storageBucket: "priorize-55eb8.firebasestorage.app",
+      messagingSenderId: "876526282464",
+      appId: "1:876526282464:web:e74908e7d0fa48fe041285",
+      measurementId: "G-M5CJ2E8438"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Verifica se o usuário está logado
+    auth.onAuthStateChanged((user) => {
+      if (!user) {
+        // Se não estiver logado, redireciona para a página de login
+        window.location.href = 'index.html';
+      } else {
+        // Exibe informações do usuário
+        document.getElementById('userName').textContent = user.displayName || 'Usuário';
+        document.getElementById('userEmail').textContent = user.email || '';
+        
+        if (user.photoURL) {
+          document.getElementById('userAvatar').innerHTML = `
+            <img src="${user.photoURL}" alt="Foto do usuário" style="width: 50px; height: 50px; border-radius: 50%; border: 3px solid white;">
+          `;
+        }
+      }
+    });
+
+    // Configura o botão de logout
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+        // Limpa o localStorage
+        localStorage.removeItem('user');
+        // Redireciona para a página de login
+        window.location.href = 'index.html';
+      } catch (error) {
+        console.error('Erro ao fazer logout:', error);
+      }
+    });
+  </script>
+</body>
+</html>
