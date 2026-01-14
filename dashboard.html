@@ -6,6 +6,8 @@
   <!-- Favicon adicionado -->
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <!-- Ícones para os botões -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * {
       margin: 0;
@@ -15,7 +17,7 @@
     
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: white;
+      background-color: #f8f9fa;
       min-height: 100vh;
     }
     
@@ -68,11 +70,199 @@
       background: rgba(255,255,255,0.3);
     }
     
-    /* Conteúdo principal - TOTALMENTE LIMPO */
+    /* Conteúdo principal */
     .main-content {
-      padding-top: 100px;
+      padding-top: 120px;
       min-height: calc(100vh - 100px);
+      background-color: #f8f9fa;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+    
+    /* Container do sistema de tarefas */
+    .tasks-container {
       background-color: white;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      padding: 30px;
+      margin-bottom: 40px;
+    }
+    
+    .tasks-header {
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    
+    .tasks-header h1 {
+      color: #333;
+      font-size: 2.2em;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .tasks-header p {
+      color: #666;
+      font-size: 1.1em;
+    }
+    
+    /* Estilo dos itens de tarefa */
+    .task-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 15px;
+      background-color: #f8f9ff;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      border: 1px solid #e6e8ff;
+    }
+    
+    .task-item:hover {
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    .task-number {
+      font-weight: bold;
+      font-size: 1.3em;
+      color: #667eea;
+      min-width: 40px;
+      text-align: center;
+    }
+    
+    .task-input-container {
+      flex-grow: 1;
+      margin: 0 15px;
+    }
+    
+    .task-input {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid #e0e4ff;
+      border-radius: 10px;
+      font-size: 1.1em;
+      transition: all 0.3s;
+      background-color: white;
+    }
+    
+    .task-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    }
+    
+    .task-actions {
+      display: flex;
+      gap: 8px;
+      min-width: 100px;
+    }
+    
+    .action-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .action-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    }
+    
+    .action-btn:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    /* Botão de adicionar nova tarefa */
+    .add-task-btn {
+      display: block;
+      margin: 30px auto;
+      padding: 15px 30px;
+      font-size: 1.8em;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 70px;
+      height: 70px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: all 0.3s;
+    }
+    
+    .add-task-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    }
+    
+    .add-task-btn:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    /* Notificação de salvamento */
+    .save-notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #4CAF50;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: none;
+      z-index: 1000;
+      animation: fadeInOut 3s ease-in-out;
+    }
+    
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateY(20px); }
+      10% { opacity: 1; transform: translateY(0); }
+      90% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(20px); }
+    }
+    
+    /* Instruções */
+    .instructions {
+      background-color: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 30px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    
+    .instructions h3 {
+      color: #333;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .instructions ul {
+      padding-left: 20px;
+      color: #555;
+    }
+    
+    .instructions li {
+      margin-bottom: 8px;
+      line-height: 1.5;
     }
     
     /* Responsividade */
@@ -82,6 +272,28 @@
         gap: 20px;
         text-align: center;
         padding: 20px;
+      }
+      
+      .main-content {
+        padding-top: 140px;
+      }
+      
+      .task-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .task-number {
+        margin-bottom: 10px;
+      }
+      
+      .task-input-container {
+        width: 100%;
+        margin: 10px 0;
+      }
+      
+      .task-actions {
+        align-self: flex-end;
       }
     }
   </style>
@@ -100,9 +312,38 @@
     </div>
   </nav>
   
-  <!-- Área de conteúdo TOTALMENTE LIMPA -->
+  <!-- Área de conteúdo com o sistema de tarefas -->
   <main class="main-content">
-    <!-- Conteúdo em branco para você adicionar o que quiser -->
+    <div class="tasks-container">
+      <div class="tasks-header">
+        <h1>Priorize suas Tarefas</h1>
+        <p>Adicione suas tarefas e organize por prioridade</p>
+      </div>
+      
+      <div id="tasksList">
+        <!-- As tarefas serão inseridas aqui dinamicamente -->
+      </div>
+      
+      <button class="add-task-btn" id="addTaskBtn" title="Adicionar nova tarefa">
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
+    
+    <div class="instructions">
+      <h3><i class="fas fa-info-circle"></i> Como usar:</h3>
+      <ul>
+        <li>Digite uma tarefa no campo disponível</li>
+        <li>Clique no botão <strong>+</strong> para adicionar uma nova tarefa (só funciona se a anterior estiver preenchida)</li>
+        <li>Use os botões <i class="fas fa-arrow-up"></i> e <i class="fas fa-arrow-down"></i> para definir a prioridade das tarefas</li>
+        <li>A tarefa no topo da lista tem a <strong>maior prioridade</strong></li>
+        <li>Suas tarefas são salvas automaticamente na sua conta</li>
+      </ul>
+    </div>
+    
+    <!-- Notificação de salvamento -->
+    <div class="save-notification" id="saveNotification">
+      <i class="fas fa-check-circle"></i> Tarefas salvas com sucesso!
+    </div>
   </main>
 
   <script type="module">
@@ -111,6 +352,13 @@
       getAuth,
       signOut
     } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import { 
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc,
+      updateDoc
+    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBll8nZcmuncKUN7xiK2Ku7Xv7gR7z4HwY",
@@ -124,13 +372,19 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let tasks = [];
 
     // Verifica se o usuário está logado
-    auth.onAuthStateChanged((user) => {
+    auth.onAuthStateChanged(async (user) => {
       if (!user) {
         // Se não estiver logado, redireciona para a página de login
         window.location.href = 'index.html';
       } else {
+        currentUser = user;
+        
         // Exibe informações do usuário - EXATAMENTE como estava antes
         document.getElementById('userName').textContent = user.displayName || 'Usuário';
         document.getElementById('userEmail').textContent = user.email || '';
@@ -140,8 +394,225 @@
             <img src="${user.photoURL}" alt="Foto do usuário" style="width: 50px; height: 50px; border-radius: 50%; border: 3px solid white;">
           `;
         }
+        
+        // Carrega as tarefas do usuário
+        await loadUserTasks();
+        
+        // Se não houver tarefas, cria uma vazia
+        if (tasks.length === 0) {
+          tasks = [{ id: Date.now(), text: '', order: 0 }];
+          renderTasks();
+        }
       }
     });
+
+    // Função para carregar as tarefas do usuário do Firestore
+    async function loadUserTasks() {
+      if (!currentUser) return;
+      
+      try {
+        const userDocRef = doc(db, "users", currentUser.uid);
+        const userDoc = await getDoc(userDocRef);
+        
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          tasks = userData.tasks || [];
+          // Ordena as tarefas pela ordem
+          tasks.sort((a, b) => a.order - b.order);
+        } else {
+          tasks = [];
+        }
+        
+        renderTasks();
+      } catch (error) {
+        console.error('Erro ao carregar tarefas:', error);
+        tasks = [];
+        renderTasks();
+      }
+    }
+
+    // Função para salvar as tarefas no Firestore
+    async function saveTasks() {
+      if (!currentUser) return;
+      
+      try {
+        const userDocRef = doc(db, "users", currentUser.uid);
+        await setDoc(userDocRef, {
+          uid: currentUser.uid,
+          email: currentUser.email,
+          displayName: currentUser.displayName,
+          tasks: tasks,
+          lastUpdated: new Date().toISOString()
+        }, { merge: true });
+        
+        // Mostra notificação de salvamento
+        showSaveNotification();
+      } catch (error) {
+        console.error('Erro ao salvar tarefas:', error);
+      }
+    }
+
+    // Função para renderizar as tarefas na tela
+    function renderTasks() {
+      const tasksList = document.getElementById('tasksList');
+      tasksList.innerHTML = '';
+      
+      // Ordena as tarefas pela ordem
+      tasks.sort((a, b) => a.order - b.order);
+      
+      // Renderiza cada tarefa
+      tasks.forEach((task, index) => {
+        const taskElement = document.createElement('div');
+        taskElement.className = 'task-item';
+        taskElement.id = `task-${task.id}`;
+        
+        taskElement.innerHTML = `
+          <div class="task-number">${index + 1}</div>
+          <div class="task-input-container">
+            <input type="text" 
+                   class="task-input" 
+                   value="${task.text}" 
+                   placeholder="Digite sua tarefa aqui..." 
+                   data-id="${task.id}">
+          </div>
+          <div class="task-actions">
+            <button class="action-btn move-up-btn" ${index === 0 ? 'disabled' : ''} data-id="${task.id}">
+              <i class="fas fa-arrow-up"></i>
+            </button>
+            <button class="action-btn move-down-btn" ${index === tasks.length - 1 ? 'disabled' : ''} data-id="${task.id}">
+              <i class="fas fa-arrow-down"></i>
+            </button>
+          </div>
+        `;
+        
+        tasksList.appendChild(taskElement);
+      });
+      
+      // Atualiza o estado do botão de adicionar
+      updateAddButtonState();
+      
+      // Adiciona eventos aos inputs
+      document.querySelectorAll('.task-input').forEach(input => {
+        input.addEventListener('input', handleTaskInput);
+      });
+      
+      // Adiciona eventos aos botões de mover
+      document.querySelectorAll('.move-up-btn').forEach(btn => {
+        btn.addEventListener('click', handleMoveUp);
+      });
+      
+      document.querySelectorAll('.move-down-btn').forEach(btn => {
+        btn.addEventListener('click', handleMoveDown);
+      });
+    }
+
+    // Função para lidar com a entrada de texto nas tarefas
+    function handleTaskInput(event) {
+      const taskId = parseInt(event.target.dataset.id);
+      const taskIndex = tasks.findIndex(t => t.id === taskId);
+      
+      if (taskIndex !== -1) {
+        tasks[taskIndex].text = event.target.value;
+        // Salva automaticamente após 1 segundo sem digitar
+        debouncedSave();
+      }
+    }
+
+    // Função para mover uma tarefa para cima
+    function handleMoveUp(event) {
+      const taskId = parseInt(event.currentTarget.dataset.id);
+      const taskIndex = tasks.findIndex(t => t.id === taskId);
+      
+      if (taskIndex > 0) {
+        // Troca a ordem com a tarefa acima
+        const tempOrder = tasks[taskIndex].order;
+        tasks[taskIndex].order = tasks[taskIndex - 1].order;
+        tasks[taskIndex - 1].order = tempOrder;
+        
+        // Salva e renderiza novamente
+        saveTasks();
+        renderTasks();
+      }
+    }
+
+    // Função para mover uma tarefa para baixo
+    function handleMoveDown(event) {
+      const taskId = parseInt(event.currentTarget.dataset.id);
+      const taskIndex = tasks.findIndex(t => t.id === taskId);
+      
+      if (taskIndex < tasks.length - 1) {
+        // Troca a ordem com a tarefa abaixo
+        const tempOrder = tasks[taskIndex].order;
+        tasks[taskIndex].order = tasks[taskIndex + 1].order;
+        tasks[taskIndex + 1].order = tempOrder;
+        
+        // Salva e renderiza novamente
+        saveTasks();
+        renderTasks();
+      }
+    }
+
+    // Função para adicionar uma nova tarefa
+    function addNewTask() {
+      // Verifica se a última tarefa está preenchida
+      const lastTask = tasks[tasks.length - 1];
+      if (!lastTask || lastTask.text.trim() === '') {
+        alert('Por favor, preencha a tarefa atual antes de adicionar uma nova.');
+        return;
+      }
+      
+      // Cria uma nova tarefa
+      const newTask = {
+        id: Date.now(),
+        text: '',
+        order: tasks.length
+      };
+      
+      tasks.push(newTask);
+      renderTasks();
+      
+      // Foca no input da nova tarefa
+      setTimeout(() => {
+        const newInput = document.querySelector(`.task-input[data-id="${newTask.id}"]`);
+        if (newInput) newInput.focus();
+      }, 100);
+    }
+
+    // Função para atualizar o estado do botão de adicionar
+    function updateAddButtonState() {
+      const addButton = document.getElementById('addTaskBtn');
+      const lastTask = tasks[tasks.length - 1];
+      
+      // Habilita o botão apenas se a última tarefa estiver preenchida
+      if (lastTask && lastTask.text.trim() !== '') {
+        addButton.disabled = false;
+      } else {
+        addButton.disabled = true;
+      }
+    }
+
+    // Debounce para salvar (evita salvar a cada tecla pressionada)
+    let saveTimeout;
+    function debouncedSave() {
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(() => {
+        saveTasks();
+        updateAddButtonState();
+      }, 1000);
+    }
+
+    // Mostra notificação de salvamento
+    function showSaveNotification() {
+      const notification = document.getElementById('saveNotification');
+      notification.style.display = 'block';
+      
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 3000);
+    }
+
+    // Configura o botão de adicionar tarefa
+    document.getElementById('addTaskBtn').addEventListener('click', addNewTask);
 
     // Configura o botão de logout
     document.getElementById('logoutBtn').addEventListener('click', async () => {
