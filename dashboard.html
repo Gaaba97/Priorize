@@ -1,337 +1,242 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Priorize - Dashboard</title>
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <meta charset="UTF-8" />
+  <title>Prioridades</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: white;
-      min-height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #fff;
     }
 
-    /* NAVBAR — INTACTA */
-    .navbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 25px 40px;
+    /* ===== NAVBAR RESTAURADO ===== */
+    nav {
+      height: 60px;
+      background: #000;
+      color: #fff;
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      z-index: 1000;
+      padding: 0 24px;
     }
 
-    .logo { font-size: 1.8em; font-weight: bold; }
+    .nav-user {
+      display: flex;
+      flex-direction: column;
+      font-size: 13px;
+      line-height: 1.2;
+    }
 
-    .user-info {
+    .nav-actions {
       display: flex;
       align-items: center;
-      gap: 15px;
-    }
-
-    .logout-btn {
-      padding: 10px 20px;
-      background: rgba(255,255,255,0.2);
-      border: 1px solid rgba(255,255,255,0.4);
-      color: white;
-      border-radius: 8px;
+      gap: 16px;
+      font-size: 14px;
       cursor: pointer;
-      font-weight: bold;
     }
 
-    .main-content {
-      padding-top: 140px;
+    /* ===== CONTEÚDO ===== */
+    .container {
       display: flex;
       justify-content: center;
+      margin-top: 60px;
     }
 
-    .task-wrapper {
+    .tasks-wrapper {
       position: relative;
-      display: flex;
+      width: 700px;
     }
 
-    /* === CHAVE À ESQUERDA DOS NÚMEROS === */
-    .focus-brace {
-      position: absolute;
-      left: -160px; /* empurra a chave para ANTES da coluna Prioridade */
-      display: flex;
-      align-items: center;
-    }
-
-    .focus-text {
-      font-size: 1.8em;
-      font-weight: bold;
-      color: black;
-      margin-right: 10px;
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-    }
-
-    .brace {
-      width: 18px;
-      border-left: 2px dashed #764ba2;
-      border-top: 2px dashed #764ba2;
-      border-bottom: 2px dashed #764ba2;
-      border-radius: 8px 0 0 8px;
-    }
-
-    .task-container {
-      width: 650px;
-    }
-
-    .headers {
+    .header {
       display: grid;
-      grid-template-columns: 60px 1fr 80px;
-      margin-bottom: 10px;
+      grid-template-columns: 80px 1fr 80px;
+      margin-bottom: 8px;
       font-weight: bold;
-      color: #444;
     }
 
-    .headers div:nth-child(1),
-    .task-number {
+    .header .prio {
       text-align: center;
     }
 
-    .headers div:nth-child(2) {
+    .header .task {
       text-align: center;
     }
 
-    .task {
+    .task-row {
       display: grid;
-      grid-template-columns: 60px 1fr 80px;
+      grid-template-columns: 80px 1fr 80px;
       align-items: center;
-      gap: 6px;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
+      position: relative;
     }
 
-    .task input {
-      padding: 14px;
+    .number {
+      text-align: center;
+    }
+
+    .task-input {
+      width: 100%;
+      padding: 12px;
+      font-size: 14px;
       border-radius: 10px;
       border: 1px solid #ccc;
-      font-size: 1em;
     }
 
-    .actions {
+    .controls {
       display: flex;
-      gap: 4px;
       align-items: center;
+      gap: 8px;
     }
 
-    .drag-handle {
+    .drag {
       cursor: grab;
-      font-size: 18px;
       user-select: none;
     }
 
-    .check-btn {
+    .check {
       cursor: pointer;
-      font-size: 18px;
     }
 
-    .drag-over {
-      outline: 2px dashed #764ba2;
-      border-radius: 8px;
+    /* ===== CHAVE TRACEJADA ===== */
+    .brace-container {
+      position: absolute;
+      left: -55px;
+      top: 32px;
+      display: flex;
+      align-items: center;
+      height: calc(100% - 32px);
     }
 
-    .add-btn {
-      margin-top: 15px;
-      width: 100%;
-      padding: 14px;
-      border-radius: 10px;
-      font-size: 1.2em;
-      font-weight: bold;
-      border: 2px dashed #764ba2;
-      background: white;
-      cursor: pointer;
+    .focus-text {
+      font-size: 28px;
+      color: #000;
+      margin-right: 8px;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
+
+    .brace {
+      border-left: 3px dashed purple;
+      border-top: 3px dashed purple;
+      border-bottom: 3px dashed purple;
+      width: 18px;
+      height: 100%;
     }
   </style>
 </head>
 
 <body>
 
-<nav class="navbar">
-  <div class="logo">Priorize Dashboard</div>
-  <div class="user-info">
-    <div id="userName"></div>
-    <div id="userEmail" style="font-size: 0.9em; opacity: 0.9;"></div>
-    <button class="logout-btn" id="logoutBtn">Sair</button>
-  </div>
-</nav>
+  <!-- NAVBAR RESTAURADO -->
+  <nav>
+    <div class="nav-user">
+      <span id="userName">Usuário</span>
+      <span id="userEmail">email@email.com</span>
+    </div>
 
-<main class="main-content">
-  <div class="task-wrapper">
-    <div id="focusBrace"></div>
+    <div class="nav-actions" onclick="logout()">
+      Sair
+    </div>
+  </nav>
 
-    <div class="task-container">
-      <div class="headers">
-        <div>Prioridade</div>
-        <div>Tarefa</div>
+  <div class="container">
+    <div class="tasks-wrapper" id="tasksWrapper">
+
+      <div class="header">
+        <div class="prio">Prioridade</div>
+        <div class="task">Tarefa</div>
         <div></div>
       </div>
-      <div id="taskContainer"></div>
+
+      <!-- CHAVE -->
+      <div class="brace-container" id="brace">
+        <div class="focus-text">Foque nisso</div>
+        <div class="brace"></div>
+      </div>
+
+      <!-- TAREFAS -->
+      <div id="tasks"></div>
     </div>
   </div>
-</main>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-  import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-
+<script>
   const firebaseConfig = {
-    apiKey: "AIzaSyBll8nZcmuncKUN7xiK2Ku7Xv7gR7z4HwY",
-    authDomain: "priorize-55eb8.firebaseapp.com",
-    projectId: "priorize-55eb8",
-    storageBucket: "priorize-55eb8.firebasestorage.app",
-    messagingSenderId: "876526282464",
-    appId: "1:876526282464:web:e74908e7d0fa48fe041285"
+    apiKey: "SUA_API_KEY",
+    authDomain: "SEU_DOMINIO",
+    projectId: "SEU_PROJECT_ID"
   };
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
 
-  let tasks = [];
-  let draggedIndex = null;
-  let userId = null;
-
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-      window.location.href = 'index.html';
-      return;
-    }
-
-    userId = user.uid;
-    document.getElementById('userName').textContent = user.displayName || 'Usuário';
-    document.getElementById('userEmail').textContent = user.email || '';
-
-    await loadTasks();
-    renderTasks();
+  auth.onAuthStateChanged(user => {
+    if (!user) return;
+    document.getElementById("userName").innerText = user.displayName || "Usuário";
+    document.getElementById("userEmail").innerText = user.email;
   });
 
-  async function loadTasks() {
-    const snap = await getDoc(doc(db, "tasks", userId));
-    tasks = snap.exists() && snap.data().items.length ? snap.data().items : [""];
+  function logout() {
+    auth.signOut();
   }
 
-  async function saveTasks() {
-    await setDoc(doc(db, "tasks", userId), { items: tasks });
-  }
+  const tasksEl = document.getElementById("tasks");
 
-  function renderFocusBrace() {
-    const brace = document.getElementById('focusBrace');
-    brace.innerHTML = "";
+  function createTask(i) {
+    const row = document.createElement("div");
+    row.className = "task-row";
 
-    const visibleTasks = document.querySelectorAll('.task');
-    const count = Math.min(3, visibleTasks.length);
-    if (!count) return;
-
-    const first = visibleTasks[0].querySelector('input').getBoundingClientRect();
-    const last = visibleTasks[count - 1].querySelector('input').getBoundingClientRect();
-    const wrapperTop = document.querySelector('.task-wrapper').getBoundingClientRect().top;
-
-    const top = first.top - wrapperTop;
-    const height = last.bottom - first.top;
-
-    brace.innerHTML = `
-      <div class="focus-brace" style="top:${top}px; height:${height}px">
-        <div class="focus-text" style="height:${height}px">Foque nisso</div>
-        <div class="brace" style="height:${height}px"></div>
+    row.innerHTML = `
+      <div class="number">${i}</div>
+      <input class="task-input" />
+      <div class="controls">
+        <span class="drag">✥</span>
+        <span class="check">✔</span>
       </div>
     `;
-  }
 
-  function renderTasks() {
-    const container = document.getElementById('taskContainer');
-    container.innerHTML = "";
-
-    tasks.forEach((text, index) => {
-      const div = document.createElement('div');
-      div.className = "task";
-
-      div.innerHTML = `
-        <div class="task-number">${index + 1}</div>
-        <input value="${text}">
-        <div class="actions">
-          <div class="drag-handle">✥</div>
-          <div class="check-btn">✔</div>
-        </div>
-      `;
-
-      const input = div.querySelector('input');
-      const handle = div.querySelector('.drag-handle');
-      const check = div.querySelector('.check-btn');
-
-      input.addEventListener('input', e => {
-        const value = e.target.value.trim();
-        if (value === "" && tasks.length > 1) {
-          tasks.splice(index, 1);
-          saveTasks();
-          renderTasks();
-        } else {
-          tasks[index] = e.target.value;
-          saveTasks();
-        }
-      });
-
-      handle.setAttribute("draggable", "true");
-      handle.addEventListener('dragstart', () => draggedIndex = index);
-
-      div.addEventListener('dragover', e => {
-        e.preventDefault();
-        div.classList.add('drag-over');
-      });
-
-      div.addEventListener('dragleave', () => div.classList.remove('drag-over'));
-
-      div.addEventListener('drop', () => {
-        div.classList.remove('drag-over');
-        if (draggedIndex === index) return;
-        const moved = tasks.splice(draggedIndex, 1)[0];
-        tasks.splice(index, 0, moved);
-        saveTasks();
-        renderTasks();
-      });
-
-      check.onclick = () => {
-        tasks.splice(index, 1);
-        if (!tasks.length) tasks.push("");
-        saveTasks();
-        renderTasks();
-      };
-
-      container.appendChild(div);
+    const input = row.querySelector("input");
+    input.addEventListener("blur", () => {
+      if (input.value.trim() === "") {
+        row.remove();
+        renumber();
+      }
     });
 
-    const btn = document.createElement('button');
-    btn.className = "add-btn";
-    btn.textContent = "+";
-    btn.onclick = () => {
-      if (tasks[tasks.length - 1].trim() === "") return;
-      tasks.push("");
-      saveTasks();
-      renderTasks();
+    row.querySelector(".check").onclick = () => {
+      row.remove();
+      renumber();
     };
 
-    container.appendChild(btn);
-
-    setTimeout(renderFocusBrace, 0);
+    return row;
   }
 
-  document.getElementById('logoutBtn').onclick = async () => {
-    await signOut(auth);
-    window.location.href = 'index.html';
-  };
+  function renumber() {
+    [...tasksEl.children].forEach((r, i) => {
+      r.querySelector(".number").innerText = i + 1;
+    });
+    updateBrace();
+  }
+
+  function updateBrace() {
+    const count = Math.min(tasksEl.children.length, 3);
+    const brace = document.getElementById("brace");
+    brace.style.height = `${count * 62}px`;
+  }
+
+  for (let i = 1; i <= 5; i++) {
+    tasksEl.appendChild(createTask(i));
+  }
+
+  updateBrace();
 </script>
 
 </body>
