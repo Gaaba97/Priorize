@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Priorize - Dashboard</title>
-  <link rel="icon" href="favicon.ico">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -14,7 +15,6 @@
       min-height: 100vh;
     }
 
-    /* ===== NAVBAR — INTACTA ===== */
     .navbar {
       position: fixed;
       top: 0;
@@ -30,10 +30,7 @@
       z-index: 1000;
     }
 
-    .logo {
-      font-size: 1.8em;
-      font-weight: bold;
-    }
+    .logo { font-size: 1.8em; font-weight: bold; }
 
     .user-info {
       display: flex;
@@ -50,7 +47,6 @@
       cursor: pointer;
       font-weight: bold;
     }
-    /* ===== FIM DO NAVBAR ===== */
 
     .main-content {
       padding-top: 140px;
@@ -59,89 +55,61 @@
     }
 
     .task-wrapper {
+      position: relative;
       display: flex;
-      align-items: flex-start;
     }
 
     .focus-brace {
       display: flex;
       align-items: center;
-      margin-right: 8px;
-    }
-
-    .focus-text {
-      font-size: 1.8em;
-      font-weight: bold;
-      color: black;
       margin-right: 10px;
-      white-space: nowrap;
+      color: #764ba2;
+      font-weight: bold;
     }
 
     .brace {
       border-left: 2px dashed #764ba2;
       border-top: 2px dashed #764ba2;
       border-bottom: 2px dashed #764ba2;
-      width: 18px;
+      width: 20px;
       border-radius: 8px 0 0 8px;
     }
 
+    .focus-text {
+      margin-left: 6px;
+      font-size: 0.9em;
+      white-space: nowrap;
+    }
+
     .task-container {
-      width: 650px;
-    }
-
-    .headers {
-      display: grid;
-      grid-template-columns: 60px 1fr 110px;
-      margin-bottom: 10px;
-      font-weight: bold;
-      color: #444;
-    }
-
-    .headers div:nth-child(1),
-    .task-number {
-      text-align: center;
-    }
-
-    .headers div:nth-child(2) {
-      text-align: center;
+      width: 600px;
     }
 
     .task {
-      display: grid;
-      grid-template-columns: 60px 1fr 110px;
+      display: flex;
       align-items: center;
       gap: 10px;
       margin-bottom: 12px;
     }
 
+    .task-number {
+      font-weight: bold;
+      width: 30px;
+    }
+
     .task input {
+      flex: 1;
       padding: 14px;
       border-radius: 10px;
       border: 1px solid #ccc;
       font-size: 1em;
     }
 
-    .actions {
-      display: flex;
-      gap: 12px;
-      justify-content: flex-end;
-      align-items: center;
-    }
-
     .drag-handle {
       cursor: grab;
       font-size: 18px;
       user-select: none;
-    }
-
-    .check-btn {
-      cursor: pointer;
-      font-size: 18px;
-    }
-
-    .drag-over {
-      outline: 2px dashed #764ba2;
-      border-radius: 8px;
+      padding: 6px;
     }
 
     .add-btn {
@@ -155,12 +123,15 @@
       background: white;
       cursor: pointer;
     }
+
+    .drag-over {
+      border: 2px dashed #764ba2;
+    }
   </style>
 </head>
 
 <body>
 
-  <!-- NAVBAR ORIGINAL -->
   <nav class="navbar">
     <div class="logo">Priorize Dashboard</div>
     <div class="user-info">
@@ -176,15 +147,7 @@
   <main class="main-content">
     <div class="task-wrapper">
       <div id="focusBrace"></div>
-
-      <div class="task-container">
-        <div class="headers">
-          <div>Prioridade</div>
-          <div>Tarefa</div>
-          <div></div>
-        </div>
-        <div id="taskContainer"></div>
-      </div>
+      <div class="task-container" id="taskContainer"></div>
     </div>
   </main>
 
