@@ -15,27 +15,29 @@
     
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background-color: white;
       min-height: 100vh;
-      padding: 20px;
     }
     
-    .dashboard-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      background: white;
-      border-radius: 15px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      overflow: hidden;
-    }
-    
-    .header {
+    /* Navbar fixa */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      padding: 25px 40px;
+      padding: 15px 40px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+    
+    .logo {
+      font-size: 1.8em;
+      font-weight: bold;
     }
     
     .user-info {
@@ -44,15 +46,28 @@
       gap: 15px;
     }
     
+    .user-details {
+      text-align: right;
+    }
+    
+    .user-name {
+      font-weight: bold;
+    }
+    
+    .user-email {
+      font-size: 0.85em;
+      opacity: 0.9;
+    }
+    
     .user-info img {
-      width: 50px;
-      height: 50px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      border: 3px solid white;
+      border: 2px solid white;
     }
     
     .logout-btn {
-      padding: 10px 20px;
+      padding: 8px 18px;
       background: rgba(255,255,255,0.2);
       border: 1px solid rgba(255,255,255,0.4);
       color: white;
@@ -60,24 +75,46 @@
       cursor: pointer;
       font-weight: bold;
       transition: all 0.3s;
+      margin-left: 10px;
     }
     
     .logout-btn:hover {
       background: rgba(255,255,255,0.3);
     }
     
-    .content {
-      padding: 40px;
-      min-height: 500px;
+    /* Conteúdo principal */
+    .main-content {
+      padding-top: 80px; /* Espaço para a navbar fixa */
+      padding: 100px 40px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
     }
     
-    .welcome-message {
-      font-size: 2.5em;
-      color: #333;
-      margin-bottom: 30px;
+    .welcome-section {
       text-align: center;
+      margin-bottom: 50px;
     }
     
+    .welcome-title {
+      font-size: 2.8em;
+      color: #333;
+      margin-bottom: 15px;
+    }
+    
+    .welcome-subtitle {
+      font-size: 1.2em;
+      color: #666;
+      max-width: 700px;
+      margin: 0 auto 30px;
+      line-height: 1.6;
+    }
+    
+    .highlight {
+      color: #764ba2;
+      font-weight: bold;
+    }
+    
+    /* Cards de funcionalidades */
     .features {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -87,86 +124,138 @@
     
     .feature-card {
       background: #f8f9fa;
-      padding: 25px;
+      padding: 30px;
       border-radius: 12px;
       text-align: center;
-      transition: transform 0.3s;
+      transition: transform 0.3s, box-shadow 0.3s;
       border: 1px solid #e9ecef;
     }
     
     .feature-card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     }
     
     .feature-icon {
       font-size: 3em;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
     
+    .feature-card h3 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+    
+    .feature-card p {
+      color: #666;
+      line-height: 1.5;
+    }
+    
+    /* Área de status */
+    .status-section {
+      background-color: #f9f7ff;
+      border-radius: 12px;
+      padding: 25px;
+      margin-top: 50px;
+      border-left: 5px solid #764ba2;
+    }
+    
+    .status-title {
+      color: #764ba2;
+      margin-bottom: 15px;
+      font-size: 1.4em;
+    }
+    
+    .status-text {
+      color: #555;
+      line-height: 1.6;
+    }
+    
+    /* Responsividade */
     @media (max-width: 768px) {
-      .header {
+      .navbar {
+        padding: 15px 20px;
         flex-direction: column;
-        gap: 20px;
-        text-align: center;
+        gap: 15px;
       }
       
-      .welcome-message {
-        font-size: 1.8em;
+      .user-info {
+        width: 100%;
+        justify-content: space-between;
+      }
+      
+      .main-content {
+        padding: 120px 20px 30px;
+      }
+      
+      .welcome-title {
+        font-size: 2.2em;
+      }
+      
+      .features {
+        grid-template-columns: 1fr;
       }
     }
   </style>
 </head>
 <body>
-  <div class="dashboard-container">
-    <div class="header">
-      <h1>Priorize Dashboard</h1>
-      <div class="user-info">
-        <div id="userAvatar"></div>
-        <div>
-          <div id="userName"></div>
-          <div id="userEmail" style="font-size: 0.9em; opacity: 0.9;"></div>
-        </div>
-        <button class="logout-btn" id="logoutBtn">Sair</button>
+  <!-- Navbar fixa -->
+  <nav class="navbar">
+    <div class="logo">Priorize Dashboard</div>
+    <div class="user-info">
+      <div class="user-details">
+        <div class="user-name" id="userName">Usuário</div>
+        <div class="user-email" id="userEmail">carregando...</div>
       </div>
+      <div id="userAvatar"></div>
+      <button class="logout-btn" id="logoutBtn">Sair</button>
     </div>
-    
-    <div class="content">
-      <div class="welcome-message">
-        Bem-vindo ao <span style="color: #764ba2;">Priorize</span>!
-      </div>
-      
-      <p style="text-align: center; color: #666; font-size: 1.2em; max-width: 800px; margin: 0 auto;">
-        Aqui você pode gerenciar suas prioridades, tarefas e projetos de forma eficiente.
+  </nav>
+  
+  <!-- Conteúdo principal -->
+  <main class="main-content">
+    <section class="welcome-section">
+      <h1 class="welcome-title">Bem-vindo ao <span class="highlight">Priorize</span>!</h1>
+      <p class="welcome-subtitle">
+        Aqui você pode gerenciar suas prioridades, tarefas e projetos de forma eficiente. 
+        Aproveite todas as funcionalidades para organizar seu dia a dia.
       </p>
-      
-      <div class="features">
-        <div class="feature-card">
-          <div class="feature-icon">📋</div>
-          <h3>Tarefas</h3>
-          <p>Gerencie suas tarefas diárias</p>
-        </div>
-        
-        <div class="feature-card">
-          <div class="feature-icon">🎯</div>
-          <h3>Prioridades</h3>
-          <p>Defina suas prioridades</p>
-        </div>
-        
-        <div class="feature-card">
-          <div class="feature-icon">📊</div>
-          <h3>Relatórios</h3>
-          <p>Acompanhe seu progresso</p>
-        </div>
-        
-        <div class="feature-card">
-          <div class="feature-icon">⚙️</div>
-          <h3>Configurações</h3>
-          <p>Personalize sua experiência</p>
-        </div>
+    </section>
+    
+    <section class="features">
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <h3>Tarefas</h3>
+        <p>Gerencie suas tarefas diárias e organize suas atividades</p>
       </div>
-    </div>
-  </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Prioridades</h3>
+        <p>Defina suas prioridades e foque no que é importante</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Relatórios</h3>
+        <p>Acompanhe seu progresso e visualize estatísticas</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">⚙️</div>
+        <h3>Configurações</h3>
+        <p>Personalize sua experiência de uso</p>
+      </div>
+    </section>
+    
+    <section class="status-section">
+      <h3 class="status-title">Status do Sistema</h3>
+      <p class="status-text">
+        Todas as funcionalidades estão disponíveis. Você tem 0 tarefas pendentes 
+        e 0 projetos ativos. Comece criando suas primeiras tarefas hoje mesmo!
+      </p>
+    </section>
+  </main>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
@@ -200,7 +289,14 @@
         
         if (user.photoURL) {
           document.getElementById('userAvatar').innerHTML = `
-            <img src="${user.photoURL}" alt="Foto do usuário" style="width: 50px; height: 50px; border-radius: 50%; border: 3px solid white;">
+            <img src="${user.photoURL}" alt="Foto do usuário">
+          `;
+        } else {
+          // Se não tiver foto, mostra um placeholder
+          document.getElementById('userAvatar').innerHTML = `
+            <div style="width: 40px; height: 40px; border-radius: 50%; background-color: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; border: 2px solid white;">
+              <span style="font-size: 1.2em;">${user.displayName ? user.displayName.charAt(0).toUpperCase() : 'U'}</span>
+            </div>
           `;
         }
       }
