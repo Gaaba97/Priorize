@@ -20,8 +20,6 @@
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       padding: 25px 40px;
-      display: flex;
-      justify-content: space-between;
       z-index: 1000;
     }
 
@@ -38,7 +36,7 @@
 
     .focus-brace {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       margin-right: 6px;
     }
 
@@ -59,55 +57,55 @@
     }
 
     .task-container {
-      width: 620px;
+      width: 650px;
     }
 
     .headers {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 8px;
+      display: grid;
+      grid-template-columns: 60px 1fr 90px;
+      margin-bottom: 10px;
       font-weight: bold;
       color: #444;
     }
 
-    .header-priority { width: 40px; }
-    .header-task { flex: 1; }
-
     .task {
-      display: flex;
+      display: grid;
+      grid-template-columns: 60px 1fr 90px;
       align-items: center;
       gap: 10px;
       margin-bottom: 12px;
     }
 
     .task-number {
-      width: 40px;
       font-weight: bold;
     }
 
     .task input {
-      flex: 1;
       padding: 14px;
       border-radius: 10px;
       border: 1px solid #ccc;
       font-size: 1em;
     }
 
+    .actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
     .drag-handle {
       cursor: grab;
       font-size: 18px;
-      padding: 6px;
       user-select: none;
     }
 
     .check-btn {
       cursor: pointer;
       font-size: 18px;
-      padding: 6px;
     }
 
     .drag-over {
-      border: 2px dashed #764ba2;
+      outline: 2px dashed #764ba2;
       border-radius: 8px;
     }
 
@@ -137,8 +135,9 @@
 
       <div class="task-container">
         <div class="headers">
-          <div class="header-priority">Prioridade</div>
-          <div class="header-task">Tarefa</div>
+          <div>Prioridade</div>
+          <div>Tarefa</div>
+          <div></div>
         </div>
         <div id="taskContainer"></div>
       </div>
@@ -172,7 +171,7 @@
 
     async function loadTasks() {
       const snap = await getDoc(doc(db, "tasks", userId));
-      tasks = snap.exists() ? snap.data().items : [""];
+      tasks = snap.exists() && snap.data().items.length ? snap.data().items : [""];
     }
 
     async function saveTasks() {
@@ -184,12 +183,15 @@
       el.innerHTML = "";
       if (!count) return;
 
-      const h = count * 62 - 12;
+      const taskHeight = 62;
+      const height = count * taskHeight - 12;
+
       el.innerHTML = `
-        <div class="focus-brace" style="height:${h}px">
+        <div class="focus-brace" style="margin-top:38px">
           <div class="focus-text">Foque nisso</div>
-          <div class="brace" style="height:${h}px"></div>
-        </div>`;
+          <div class="brace" style="height:${height}px"></div>
+        </div>
+      `;
     }
 
     function renderTasks() {
@@ -205,8 +207,10 @@
         div.innerHTML = `
           <div class="task-number">${index + 1}</div>
           <input value="${text}">
-          <div class="drag-handle">✥</div>
-          <div class="check-btn">✔</div>
+          <div class="actions">
+            <div class="drag-handle">✥</div>
+            <div class="check-btn">✔</div>
+          </div>
         `;
 
         const input = div.querySelector('input');
@@ -214,16 +218,20 @@
         const check = div.querySelector('.check-btn');
 
         input.addEventListener('input', e => {
-          tasks[index] = e.target.value;
-          saveTasks();
-        });
-
-        handle.addEventListener('dragstart', e => {
-          draggedIndex = index;
-          e.dataTransfer.effectAllowed = "move";
+          const value = e.target.value.trim();
+          if (value === "" && tasks.length > 1) {
+            tasks.splice(index, 1);
+            saveTasks();
+            renderTasks();
+          } else {
+            tasks[index] = e.target.value;
+            saveTasks();
+          }
         });
 
         handle.setAttribute("draggable", "true");
+
+        handle.addEventListener('dragstart', () => draggedIndex = index);
 
         div.addEventListener('dragover', e => {
           e.preventDefault();
