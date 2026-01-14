@@ -15,7 +15,7 @@
       min-height: 100vh;
     }
 
-    /* NAVBAR — NÃO TOQUEI */
+    /* NAVBAR — INTACTA */
     .navbar {
       position: fixed;
       top: 0;
@@ -65,6 +65,7 @@
       align-items: center;
       gap: 10px;
       margin-bottom: 12px;
+      background: white;
     }
 
     .task-number {
@@ -80,19 +81,11 @@
       font-size: 1em;
     }
 
-    .controls {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .controls button {
-      cursor: pointer;
-      border: none;
-      background: #eee;
-      border-radius: 6px;
-      padding: 4px 6px;
-      font-weight: bold;
+    .drag-handle {
+      cursor: grab;
+      font-size: 18px;
+      user-select: none;
+      padding: 6px;
     }
 
     .add-btn {
@@ -106,12 +99,16 @@
       background: white;
       cursor: pointer;
     }
+
+    .drag-over {
+      border: 2px dashed #764ba2;
+    }
   </style>
 </head>
 
 <body>
 
-  <!-- NAVBAR INTACTA -->
+  <!-- NAVBAR -->
   <nav class="navbar">
     <div class="logo">Priorize Dashboard</div>
     <div class="user-info">
@@ -132,9 +129,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
     import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-    import { 
-      getFirestore, doc, setDoc, getDoc 
-    } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBll8nZcmuncKUN7xiK2Ku7Xv7gR7z4HwY",
@@ -151,6 +146,7 @@
 
     let tasks = [];
     let userId = null;
+    let draggedIndex = null;
 
     auth.onAuthStateChanged(async (user) => {
       if (!user) {
@@ -169,7 +165,9 @@
     async function loadTasks() {
       const ref = doc(db, "tasks", userId);
       const snap = await getDoc(ref);
-      tasks = snap.exists() ? snap.data().items : [""];
+      tasks = snap.exists() && snap.data().items.length
+        ? snap.data().items
+        : [""];
     }
 
     async function saveTasks() {
@@ -183,19 +181,42 @@
       tasks.forEach((text, index) => {
         const div = document.createElement('div');
         div.className = "task";
+        div.draggable = true;
 
         div.innerHTML = `
           <div class="task-number">${index + 1}</div>
           <input value="${text}">
-          <div class="controls">
-            <button onclick="moveUp(${index})">↑</button>
-            <button onclick="moveDown(${index})">↓</button>
-          </div>
+          <div class="drag-handle">✥</div>
         `;
 
-        div.querySelector('input').addEventListener('input', e => {
-          tasks[index] = e.target.value;
+        const input = div.querySelector('input');
+
+        input.addEventListener('input', e => {
+          const value = e.target.value.trim();
+          if (value === "" && tasks.length > 1) {
+            tasks.splice(index, 1);
+          } else {
+            tasks[index] = e.target.value;
+          }
           saveTasks();
+          renderTasks();
+        });
+
+        div.addEventListener('dragstart', () => draggedIndex = index);
+        div.addEventListener('dragover', e => {
+          e.preventDefault();
+          div.classList.add('drag-over');
+        });
+
+        div.addEventListener('dragleave', () => div.classList.remove('drag-over'));
+
+        div.addEventListener('drop', () => {
+          div.classList.remove('drag-over');
+          if (draggedIndex === index) return;
+          const moved = tasks.splice(draggedIndex, 1)[0];
+          tasks.splice(index, 0, moved);
+          saveTasks();
+          renderTasks();
         });
 
         container.appendChild(div);
@@ -204,35 +225,19 @@
       const btn = document.createElement('button');
       btn.className = "add-btn";
       btn.textContent = "+";
-      btn.onclick = addTask;
+      btn.onclick = () => {
+        if (tasks[tasks.length - 1].trim() === "") return;
+        tasks.push("");
+        saveTasks();
+        renderTasks();
+      };
       container.appendChild(btn);
-    }
-
-    function addTask() {
-      if (tasks[tasks.length - 1].trim() === "") return;
-      tasks.push("");
-      saveTasks();
-      renderTasks();
-    }
-
-    window.moveUp = function(i) {
-      if (i === 0) return;
-      [tasks[i-1], tasks[i]] = [tasks[i], tasks[i-1]];
-      saveTasks();
-      renderTasks();
-    }
-
-    window.moveDown = function(i) {
-      if (i === tasks.length - 1) return;
-      [tasks[i+1], tasks[i]] = [tasks[i], tasks[i+1]];
-      saveTasks();
-      renderTasks();
     }
 
     document.getElementById('logoutBtn').onclick = async () => {
       await signOut(auth);
       window.location.href = 'index.html';
-    }
+    };
   </script>
 
 </body>
