@@ -15,6 +15,7 @@
       min-height: 100vh;
     }
 
+    /* ===== NAVBAR ORIGINAL ===== */
     .navbar {
       position: fixed;
       top: 0;
@@ -30,12 +31,22 @@
       z-index: 1000;
     }
 
-    .logo { font-size: 1.8em; font-weight: bold; }
+    .logo {
+      font-size: 1.8em;
+      font-weight: bold;
+    }
 
     .user-info {
       display: flex;
       align-items: center;
       gap: 15px;
+    }
+
+    .user-info img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 3px solid white;
     }
 
     .logout-btn {
@@ -47,6 +58,7 @@
       cursor: pointer;
       font-weight: bold;
     }
+    /* ===== FIM NAVBAR ===== */
 
     .main-content {
       padding-top: 140px;
@@ -55,61 +67,89 @@
     }
 
     .task-wrapper {
-      position: relative;
       display: flex;
+      align-items: flex-start;
     }
 
     .focus-brace {
       display: flex;
       align-items: center;
-      margin-right: 10px;
-      color: #764ba2;
+      margin-right: 8px;
+    }
+
+    .focus-text {
+      font-size: 1.8em;
       font-weight: bold;
+      color: black;
+      margin-right: 10px;
+      white-space: nowrap;
     }
 
     .brace {
       border-left: 2px dashed #764ba2;
       border-top: 2px dashed #764ba2;
       border-bottom: 2px dashed #764ba2;
-      width: 20px;
+      width: 18px;
       border-radius: 8px 0 0 8px;
     }
 
-    .focus-text {
-      margin-left: 6px;
-      font-size: 0.9em;
-      white-space: nowrap;
+    .task-container {
+      width: 650px;
     }
 
-    .task-container {
-      width: 600px;
+    .headers {
+      display: grid;
+      grid-template-columns: 60px 1fr 110px;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #444;
+    }
+
+    .headers div:nth-child(1),
+    .task-number {
+      text-align: center;
+    }
+
+    .headers div:nth-child(2) {
+      text-align: center;
     }
 
     .task {
-      display: flex;
+      display: grid;
+      grid-template-columns: 60px 1fr 110px;
       align-items: center;
       gap: 10px;
       margin-bottom: 12px;
     }
 
-    .task-number {
-      font-weight: bold;
-      width: 30px;
-    }
-
     .task input {
-      flex: 1;
       padding: 14px;
       border-radius: 10px;
       border: 1px solid #ccc;
       font-size: 1em;
     }
 
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
     .drag-handle {
       cursor: grab;
       font-size: 18px;
       user-select: none;
-      padding: 6px;
+    }
+
+    .check-btn {
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .drag-over {
+      outline: 2px dashed #764ba2;
+      border-radius: 8px;
     }
 
     .add-btn {
@@ -123,15 +163,12 @@
       background: white;
       cursor: pointer;
     }
-
-    .drag-over {
-      border: 2px dashed #764ba2;
-    }
   </style>
 </head>
 
 <body>
 
+  <!-- NAVBAR ORIGINAL COM USER -->
   <nav class="navbar">
     <div class="logo">Priorize Dashboard</div>
     <div class="user-info">
@@ -147,21 +184,33 @@
   <main class="main-content">
     <div class="task-wrapper">
       <div id="focusBrace"></div>
-      <div class="task-container" id="taskContainer"></div>
+
+      <div class="task-container">
+        <div class="headers">
+          <div>Prioridade</div>
+          <div>Tarefa</div>
+          <div></div>
+        </div>
+        <div id="taskContainer"></div>
+      </div>
     </div>
   </main>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
-    const app = initializeApp({
+    const firebaseConfig = {
       apiKey: "AIzaSyBll8nZcmuncKUN7xiK2Ku7Xv7gR7z4HwY",
       authDomain: "priorize-55eb8.firebaseapp.com",
-      projectId: "priorize-55eb8"
-    });
+      projectId: "priorize-55eb8",
+      storageBucket: "priorize-55eb8.firebasestorage.app",
+      messagingSenderId: "876526282464",
+      appId: "1:876526282464:web:e74908e7d0fa48fe041285"
+    };
 
+    const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
@@ -169,9 +218,21 @@
     let draggedIndex = null;
     let userId = null;
 
-    onAuthStateChanged(auth, async user => {
-      if (!user) return;
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = 'index.html';
+        return;
+      }
+
       userId = user.uid;
+      document.getElementById('userName').textContent = user.displayName || 'Usuário';
+      document.getElementById('userEmail').textContent = user.email || '';
+
+      if (user.photoURL) {
+        document.getElementById('userAvatar').innerHTML =
+          `<img src="${user.photoURL}" alt="Avatar">`;
+      }
+
       await loadTasks();
       renderTasks();
     });
@@ -237,7 +298,6 @@
         });
 
         handle.setAttribute("draggable", "true");
-
         handle.addEventListener('dragstart', () => draggedIndex = index);
 
         div.addEventListener('dragover', e => {
@@ -277,6 +337,11 @@
       };
       container.appendChild(btn);
     }
+
+    document.getElementById('logoutBtn').onclick = async () => {
+      await signOut(auth);
+      window.location.href = 'index.html';
+    };
   </script>
 
 </body>
