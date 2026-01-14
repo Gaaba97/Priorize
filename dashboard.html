@@ -15,7 +15,6 @@
       min-height: 100vh;
     }
 
-    /* NAVBAR — INTACTA */
     .navbar {
       position: fixed;
       top: 0;
@@ -49,7 +48,6 @@
       font-weight: bold;
     }
 
-    /* CONTEÚDO */
     .main-content {
       padding-top: 140px;
       display: flex;
@@ -65,7 +63,6 @@
       align-items: center;
       gap: 10px;
       margin-bottom: 12px;
-      background: white;
     }
 
     .task-number {
@@ -108,7 +105,6 @@
 
 <body>
 
-  <!-- NAVBAR -->
   <nav class="navbar">
     <div class="logo">Priorize Dashboard</div>
     <div class="user-info">
@@ -121,7 +117,6 @@
     </div>
   </nav>
 
-  <!-- PRIORIZADOR -->
   <main class="main-content">
     <div class="task-container" id="taskContainer"></div>
   </main>
@@ -192,14 +187,16 @@
         const input = div.querySelector('input');
 
         input.addEventListener('input', e => {
-          const value = e.target.value.trim();
-          if (value === "" && tasks.length > 1) {
-            tasks.splice(index, 1);
-          } else {
-            tasks[index] = e.target.value;
-          }
+          tasks[index] = e.target.value;
           saveTasks();
-          renderTasks();
+        });
+
+        input.addEventListener('blur', () => {
+          if (input.value.trim() === "" && tasks.length > 1) {
+            tasks.splice(index, 1);
+            saveTasks();
+            renderTasks();
+          }
         });
 
         div.addEventListener('dragstart', () => draggedIndex = index);
@@ -207,9 +204,7 @@
           e.preventDefault();
           div.classList.add('drag-over');
         });
-
         div.addEventListener('dragleave', () => div.classList.remove('drag-over'));
-
         div.addEventListener('drop', () => {
           div.classList.remove('drag-over');
           if (draggedIndex === index) return;
