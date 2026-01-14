@@ -19,27 +19,25 @@
       min-height: 100vh;
     }
     
-    /* Navbar limpa e branca */
+    /* Navbar EXATAMENTE como estava antes */
     .navbar {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
-      background-color: white;
-      color: #333;
-      padding: 15px 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 25px 40px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       z-index: 1000;
-      border-bottom: 1px solid #eee;
     }
     
     .logo {
-      font-size: 1.5em;
-      font-weight: 600;
-      color: #333;
+      font-size: 1.8em;
+      font-weight: bold;
     }
     
     .user-info {
@@ -48,109 +46,63 @@
       gap: 15px;
     }
     
-    .user-details {
-      text-align: right;
-    }
-    
-    .user-name {
-      font-weight: 500;
-      color: #333;
-    }
-    
-    .user-email {
-      font-size: 0.8em;
-      color: #666;
-    }
-    
     .user-info img {
-      width: 36px;
-      height: 36px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
+      border: 3px solid white;
     }
     
     .logout-btn {
-      padding: 8px 16px;
-      background-color: #f5f5f5;
-      border: 1px solid #ddd;
-      color: #333;
-      border-radius: 6px;
+      padding: 10px 20px;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.4);
+      color: white;
+      border-radius: 8px;
       cursor: pointer;
-      font-weight: 500;
-      transition: all 0.2s;
-      margin-left: 10px;
+      font-weight: bold;
+      transition: all 0.3s;
     }
     
     .logout-btn:hover {
-      background-color: #eee;
+      background: rgba(255,255,255,0.3);
     }
     
-    /* Conteúdo principal */
+    /* Conteúdo principal - TOTALMENTE LIMPO */
     .main-content {
-      padding-top: 80px; /* Espaço para a navbar fixa */
-      padding: 40px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    
-    /* Área em branco para você editar */
-    .content-area {
-      min-height: 500px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .placeholder-text {
-      text-align: center;
-      color: #999;
-    }
-    
-    .placeholder-text h2 {
-      margin-bottom: 15px;
-      font-weight: 300;
-    }
-    
-    .placeholder-text p {
-      font-size: 0.9em;
-      line-height: 1.5;
-      max-width: 400px;
+      padding-top: 100px;
+      min-height: calc(100vh - 100px);
+      background-color: white;
     }
     
     /* Responsividade */
     @media (max-width: 768px) {
       .navbar {
-        padding: 15px 20px;
-      }
-      
-      .main-content {
-        padding: 100px 20px 30px;
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+        padding: 20px;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Navbar limpa e branca -->
+  <!-- Navbar EXATAMENTE como estava no seu código original -->
   <nav class="navbar">
-    <div class="logo">Priorize</div>
+    <div class="logo">Priorize Dashboard</div>
     <div class="user-info">
-      <div class="user-details">
-        <div class="user-name" id="userName">Usuário</div>
-        <div class="user-email" id="userEmail">carregando...</div>
-      </div>
       <div id="userAvatar"></div>
+      <div>
+        <div id="userName"></div>
+        <div id="userEmail" style="font-size: 0.9em; opacity: 0.9;"></div>
+      </div>
       <button class="logout-btn" id="logoutBtn">Sair</button>
     </div>
   </nav>
   
-  <!-- Conteúdo principal - Área em branco para editar -->
+  <!-- Área de conteúdo TOTALMENTE LIMPA -->
   <main class="main-content">
-    <div class="content-area">
-      <div class="placeholder-text">
-        <h2>Área em Branco</h2>
-        <p>Esta é uma área limpa para você começar a editar o site da maneira que desejar.</p>
-        <p>O navbar está configurado com login/logout funcionais. Agora você pode adicionar seu próprio conteúdo.</p>
-      </div>
-    </div>
+    <!-- Conteúdo em branco para você adicionar o que quiser -->
   </main>
 
   <script type="module">
@@ -179,20 +131,13 @@
         // Se não estiver logado, redireciona para a página de login
         window.location.href = 'index.html';
       } else {
-        // Exibe informações do usuário
+        // Exibe informações do usuário - EXATAMENTE como estava antes
         document.getElementById('userName').textContent = user.displayName || 'Usuário';
         document.getElementById('userEmail').textContent = user.email || '';
         
         if (user.photoURL) {
           document.getElementById('userAvatar').innerHTML = `
-            <img src="${user.photoURL}" alt="Foto do usuário">
-          `;
-        } else {
-          // Se não tiver foto, mostra um placeholder simples
-          document.getElementById('userAvatar').innerHTML = `
-            <div style="width: 36px; height: 36px; border-radius: 50%; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #666; font-size: 0.9em;">
-              ${user.displayName ? user.displayName.charAt(0).toUpperCase() : 'U'}
-            </div>
+            <img src="${user.photoURL}" alt="Foto do usuário" style="width: 50px; height: 50px; border-radius: 50%; border: 3px solid white;">
           `;
         }
       }
