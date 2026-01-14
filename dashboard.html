@@ -72,8 +72,8 @@
 
     .focus-brace {
       display: flex;
-      align-items: center;
-      margin-right: 8px;
+      align-items: flex-start;
+      margin-right: 18px; /* MAIS À ESQUERDA DOS NÚMEROS */
     }
 
     .focus-text {
@@ -82,6 +82,8 @@
       color: black;
       margin-right: 10px;
       white-space: nowrap;
+      display: flex;
+      align-items: center;
     }
 
     .brace {
@@ -92,10 +94,9 @@
       border-radius: 8px 0 0 8px;
     }
 
-    /* === CENTRALIZAÇÃO PELO CENTRO DA TAREFA === */
     .task-container {
       width: 650px;
-      margin-left: -40px; /* offset fino para alinhar o centro da coluna "Tarefa" com o centro da página */
+      margin-left: -40px;
     }
 
     .headers {
@@ -130,7 +131,6 @@
       font-size: 1em;
     }
 
-    /* === AÇÕES MAIS PRÓXIMAS DO CAMPO === */
     .actions {
       display: flex;
       gap: 4px;
@@ -197,7 +197,6 @@
     </div>
   </main>
 
-  <!-- SCRIPT PERMANECE EXATAMENTE O MESMO -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
     import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
@@ -257,8 +256,8 @@
       const height = count * taskHeight - 12;
 
       el.innerHTML = `
-        <div class="focus-brace" style="margin-top:38px">
-          <div class="focus-text">Foque nisso</div>
+        <div class="focus-brace" style="margin-top:46px">
+          <div class="focus-text" style="height:${height}px">Foque nisso</div>
           <div class="brace" style="height:${height}px"></div>
         </div>
       `;
