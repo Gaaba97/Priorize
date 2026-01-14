@@ -188,8 +188,133 @@
     </div>
   </main>
 
-  <!-- JS permanece igual ao último estado funcional -->
-  <!-- (não mexi porque o erro NÃO estava aqui) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+    const app = initializeApp({
+      apiKey: "AIzaSyBll8nZcmuncKUN7xiK2Ku7Xv7gR7z4HwY",
+      authDomain: "priorize-55eb8.firebaseapp.com",
+      projectId: "priorize-55eb8"
+    });
+
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let tasks = [];
+    let draggedIndex = null;
+    let userId = null;
+
+    onAuthStateChanged(auth, async user => {
+      if (!user) return;
+      userId = user.uid;
+      await loadTasks();
+      renderTasks();
+    });
+
+    async function loadTasks() {
+      const snap = await getDoc(doc(db, "tasks", userId));
+      tasks = snap.exists() && snap.data().items.length ? snap.data().items : [""];
+    }
+
+    async function saveTasks() {
+      await setDoc(doc(db, "tasks", userId), { items: tasks });
+    }
+
+    function renderFocusBrace(count) {
+      const el = document.getElementById('focusBrace');
+      el.innerHTML = "";
+      if (!count) return;
+
+      const taskHeight = 62;
+      const height = count * taskHeight - 12;
+
+      el.innerHTML = `
+        <div class="focus-brace" style="margin-top:38px">
+          <div class="focus-text">Foque nisso</div>
+          <div class="brace" style="height:${height}px"></div>
+        </div>
+      `;
+    }
+
+    function renderTasks() {
+      const container = document.getElementById('taskContainer');
+      container.innerHTML = "";
+
+      renderFocusBrace(Math.min(3, tasks.length));
+
+      tasks.forEach((text, index) => {
+        const div = document.createElement('div');
+        div.className = "task";
+
+        div.innerHTML = `
+          <div class="task-number">${index + 1}</div>
+          <input value="${text}">
+          <div class="actions">
+            <div class="drag-handle">✥</div>
+            <div class="check-btn">✔</div>
+          </div>
+        `;
+
+        const input = div.querySelector('input');
+        const handle = div.querySelector('.drag-handle');
+        const check = div.querySelector('.check-btn');
+
+        input.addEventListener('input', e => {
+          const value = e.target.value.trim();
+          if (value === "" && tasks.length > 1) {
+            tasks.splice(index, 1);
+            saveTasks();
+            renderTasks();
+          } else {
+            tasks[index] = e.target.value;
+            saveTasks();
+          }
+        });
+
+        handle.setAttribute("draggable", "true");
+
+        handle.addEventListener('dragstart', () => draggedIndex = index);
+
+        div.addEventListener('dragover', e => {
+          e.preventDefault();
+          div.classList.add('drag-over');
+        });
+
+        div.addEventListener('dragleave', () => div.classList.remove('drag-over'));
+
+        div.addEventListener('drop', () => {
+          div.classList.remove('drag-over');
+          if (draggedIndex === index) return;
+          const moved = tasks.splice(draggedIndex, 1)[0];
+          tasks.splice(index, 0, moved);
+          saveTasks();
+          renderTasks();
+        });
+
+        check.onclick = () => {
+          tasks.splice(index, 1);
+          if (!tasks.length) tasks.push("");
+          saveTasks();
+          renderTasks();
+        };
+
+        container.appendChild(div);
+      });
+
+      const btn = document.createElement('button');
+      btn.className = "add-btn";
+      btn.textContent = "+";
+      btn.onclick = () => {
+        if (tasks[tasks.length - 1].trim() === "") return;
+        tasks.push("");
+        saveTasks();
+        renderTasks();
+      };
+      container.appendChild(btn);
+    }
+  </script>
 
 </body>
 </html>
